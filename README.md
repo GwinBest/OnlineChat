@@ -11,7 +11,7 @@ If you need to run the server, then download the [MySql](https://dev.mysql.com/d
 ## Getting Started
 First, clone a repository
 ```
-git clone https://github.com/GwinBest/OnlineChat.git
+git clone --recursive https://github.com/GwinBest/OnlineChat.git
 ```
 Then, make a build folder
 ```
