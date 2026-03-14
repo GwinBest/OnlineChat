@@ -1,3 +1,0 @@
-[submodule "thirdParty/mySql"]
-    path = thirdParty/mySql
-    url = https://github.com/mysql/mysql-connector-cpp.git
