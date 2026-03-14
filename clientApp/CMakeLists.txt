@@ -3,9 +3,16 @@ cmake_minimum_required(VERSION 3.20)
 include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/resources
-    ${CMAKE_SOURCE_DIR}/thirdParty/mySql/include
     ${stb_src_path}
 )
+
+# Use connector headers from submodule when available, otherwise expect the
+# thirdParty/mySql/include path to be populated (submodule or legacy files).
+if (EXISTS "${CMAKE_SOURCE_DIR}/thirdParty/mySql/include")
+    include_directories(${CMAKE_SOURCE_DIR}/thirdParty/mySql/include)
+else()
+    message(FATAL_ERROR "MySQL connector headers not found. Initialize submodule:\n  git submodule update --init --recursive")
+endif()
 
 file(COPY ${CMAKE_SOURCE_DIR}/resources DESTINATION ${CMAKE_BINARY_DIR}/clientApp)
 

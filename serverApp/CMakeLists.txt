@@ -1,16 +1,15 @@
 include_directories(
-    ../thirdParty/mySql/include
-)
-
-file(COPY 
-    ${CMAKE_SOURCE_DIR}/thirdParty/mySql/lib/libssl-1_1-x64.dll
-    ${CMAKE_SOURCE_DIR}/thirdParty/mySql/lib/libcrypto-1_1-x64.dll
-    DESTINATION ${CMAKE_BINARY_DIR}/serverApp
-)
-
-include_directories(
     ${CMAKE_SOURCE_DIR}/src
 )
+
+# Require the connector submodule to be present. The project no longer ships
+# prebuilt binaries; initialize the submodule if it's missing.
+if (EXISTS "${CMAKE_SOURCE_DIR}/thirdParty/mySql/CMakeLists.txt")
+    add_subdirectory(${CMAKE_SOURCE_DIR}/thirdParty/mySql thirdParty_mysql_build)
+    include_directories(${CMAKE_SOURCE_DIR}/thirdParty/mySql/include)
+else()
+    message(FATAL_ERROR "MySQL connector submodule not found. Initialize it with:\n  git submodule update --init --recursive")
+endif()
 
 add_executable(Server
     main.cpp
@@ -23,7 +22,11 @@ add_executable(Server
 
 add_compile_definitions(STATIC_CONCPP)
 
-target_link_libraries(Server PUBLIC 
-    ${CMAKE_SOURCE_DIR}/thirdParty/mySql/lib/mysqlcppconn-static.lib
-)
+if (TARGET mysqlcppconn-static)
+    target_link_libraries(Server PUBLIC mysqlcppconn-static)
+elseif (TARGET mysqlcppconn)
+    target_link_libraries(Server PUBLIC mysqlcppconn)
+else()
+    message(FATAL_ERROR "MySQL connector target not available after adding submodule. Ensure the connector subproject provides a target named 'mysqlcppconn' or 'mysqlcppconn-static'.")
+endif()
 
